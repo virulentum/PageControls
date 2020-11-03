@@ -39,14 +39,14 @@ import UIKit
             inactiveLayers.forEach() { $0.backgroundColor = inactiveTint.cgColor }
         }
     }
-    @IBInspectable open var indicatorPadding: CGFloat = 10 {
+    @IBInspectable open var indicatorPadding: CGFloat = 12 {
         didSet {
             layoutInactivePageIndicators(inactiveLayers)
             layoutActivePageIndicator(progress)
             self.invalidateIntrinsicContentSize()
         }
     }
-    @IBInspectable open var indicatorRadius: CGFloat = 5 {
+    @IBInspectable open var indicatorRadius: CGFloat = 3 {
         didSet {
             layoutInactivePageIndicators(inactiveLayers)
             layoutActivePageIndicator(progress)
@@ -61,7 +61,7 @@ import UIKit
     fileprivate lazy var activeLayer: CALayer = { [unowned self] in
         let layer = CALayer()
         layer.frame = CGRect(origin: CGPoint.zero,
-                             size: CGSize(width: self.indicatorDiameter, height: self.indicatorDiameter))
+                             size: CGSize(width: self.indicatorDiameter * 3, height: self.indicatorDiameter))
         layer.backgroundColor = self.activeTint.cgColor
         layer.cornerRadius = self.indicatorRadius
         layer.actions = [
@@ -101,14 +101,12 @@ import UIKit
         // ignore if progress is outside of page indicators' bounds
         guard progress >= 0 && progress <= CGFloat(pageCount - 1) else { return }
         let denormalizedProgress = progress * (indicatorDiameter + indicatorPadding)
-        let distanceFromPage = abs(round(progress) - progress)
-        let width = indicatorDiameter
-                  + indicatorPadding * (distanceFromPage * 2)
+        let width: CGFloat = 16
         var newFrame = CGRect(x: 0,
                               y: activeLayer.frame.origin.y,
-                              width: width, //indicatorDiameter * widthMultiplier,
+                              width: width,
                               height: indicatorDiameter)
-        newFrame.origin.x = denormalizedProgress
+        newFrame.origin.x = denormalizedProgress + (indicatorDiameter - width) / 2
         activeLayer.cornerRadius = indicatorRadius
         activeLayer.frame = newFrame
     }
